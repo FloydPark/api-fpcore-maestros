@@ -61,6 +61,18 @@ public class ProductBusiness {
         return productEntity;
     }
 
+    public void updateProduct(ProductRequestDTO productRequestDTO, String idProduct) throws ValidationException, ElementNotFoundException {
+
+        if(!repository.existsById(idProduct)){
+
+            throw new ElementNotFoundException("The product with ID "+idProduct+" does not exist.");
+        }
+        productRequestDTO.setId(idProduct);
+        validateProductRequest(productRequestDTO);
+        ProductEntity productEntity = DozerUtil.INSTANCE.getMapper().map(productRequestDTO, ProductEntity.class);
+        repository.save(productEntity);
+    }
+
     private void validateProductRequest(ProductRequestDTO productRequestDTO) throws ValidationException {
 
         List<String> errors = new ArrayList<>();
