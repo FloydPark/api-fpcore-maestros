@@ -2,6 +2,7 @@ plugins {
 	id 'org.springframework.boot' version '2.2.6.RELEASE'
 	id 'io.spring.dependency-management' version '1.0.9.RELEASE'
 	id 'java'
+	id 'maven-publish'
 	id "org.sonarqube" version "2.7"
 }
 
@@ -9,18 +10,31 @@ group = 'com.floydpark.api'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8'
 
+def url_archiva = project.hasProperty("url_archiva") ? url_archiva : ""
+def usr_archiva = project.hasProperty("usr_archiva") ? usr_archiva : ""
+def psw_archiva = project.hasProperty("psw_archiva") ? psw_archiva : ""
+
 configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
+	}
+	[apiElements, runtimeElements].each {
+		it.outgoing.artifacts.removeIf { it.buildDependencies.getDependencies(null).contains(jar) }
+		it.outgoing.artifact(bootJar)
 	}
 }
 
 repositories {
 	mavenCentral()
+	maven {
+		url 'http://52.168.147.222:9000/repository/snapshots/'
+	}
 }
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+	implementation 'com.floydpark.lib:lib-commons-floydpark:0.0.1-SNAPSHOT'
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
@@ -36,5 +50,23 @@ sonarqube {
 	properties {
 		property "sonar.organization", "floydpark"
 		property "sonar.projectKey", "FloydPark_api-fpcore-maestros"
+	}
+}
+
+publishing {
+	publications {
+		mavenJava(MavenPublication) {
+			from(components.java)
+		}
+	}
+	repositories {
+		maven {
+			name = "Archiva"
+			url = url_archiva
+			credentials {
+				username = usr_archiva
+				password = psw_archiva
+			}
+		}
 	}
 }
