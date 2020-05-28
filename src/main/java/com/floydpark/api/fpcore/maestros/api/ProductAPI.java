@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+
+import java.io.Serializable;
 import java.util.List;
 
 @RestController
@@ -24,13 +26,12 @@ public class ProductAPI {
     private ProductBusiness business;
 
     @GetMapping("/")
-    public ResponseEntity getProducts() {
+    public ResponseEntity<Serializable> getProducts() {
 
-        ResponseEntity responseEntity = null;
+        ResponseEntity<Serializable> responseEntity = null;
 
         try {
 
-            business.createFooProduct();
             List<ProductEntity> products = business.getProducts();
             ResponseDTO<List<ProductEntity>> responseDTO = new ResponseDTO<>();
             responseDTO.setData(products);
@@ -47,9 +48,9 @@ public class ProductAPI {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity getProductById(@PathVariable("id") String id) {
+    public ResponseEntity<Serializable> getProductById(@PathVariable("id") String id) {
 
-        ResponseEntity responseEntity;
+        ResponseEntity<Serializable> responseEntity;
 
         try {
 

@@ -6,7 +6,6 @@ import com.floydpark.lib.commons.exception.ElementNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,23 +31,11 @@ public class ProductBusiness {
 
         List<ProductEntity> products = repository.findAll();
 
-        if(products == null || products.size() == 0){
+        if(products.isEmpty()){
 
             throw new ElementNotFoundException("There are no products, yet.");
         }
 
         return products;
-    }
-
-    public void createFooProduct(){
-
-        ProductEntity productEntity = new ProductEntity();
-        String dateTime = ""+new Date().getTime();
-        productEntity.setId(dateTime);
-        productEntity.setName("Product - "+dateTime);
-        productEntity.setValue(5000);
-        productEntity.setIva(false);
-        productEntity.setUrlPhoto("");
-        repository.save(productEntity);
     }
 }
