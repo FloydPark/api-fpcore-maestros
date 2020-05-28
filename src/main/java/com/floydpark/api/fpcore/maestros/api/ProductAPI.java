@@ -1,19 +1,18 @@
 package com.floydpark.api.fpcore.maestros.api;
 
 import com.floydpark.api.fpcore.maestros.business.ProductBusiness;
+import com.floydpark.api.fpcore.maestros.commons.dto.ProductRequestDTO;
 import com.floydpark.api.fpcore.maestros.persistence.entity.ProductEntity;
-import com.floydpark.lib.commons.dto.ErrorDTO;
 import com.floydpark.lib.commons.dto.ResponseDTO;
+import com.floydpark.lib.commons.exception.BusinessException;
 import com.floydpark.lib.commons.exception.ElementNotFoundException;
+import com.floydpark.lib.commons.exception.ValidationException;
+import com.floydpark.lib.commons.util.ResponseEntityUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
 
 import java.io.Serializable;
 import java.util.List;
@@ -28,20 +27,34 @@ public class ProductAPI {
     @GetMapping("/")
     public ResponseEntity<Serializable> getProducts() {
 
-        ResponseEntity<Serializable> responseEntity = null;
+        ResponseEntity<Serializable> responseEntity;
 
         try {
 
             List<ProductEntity> products = business.getProducts();
-            ResponseDTO<List<ProductEntity>> responseDTO = new ResponseDTO<>();
-            responseDTO.setData(products);
-            responseEntity = ResponseEntity.ok(responseDTO);
+            responseEntity = ResponseEntityUtil.INSTANCE.handleCollectionResponse(products);
 
         } catch (ElementNotFoundException e){
 
-            ErrorDTO errorDTO = new ErrorDTO();
-            errorDTO.setErrors(e.getErrors());
-            responseEntity = new ResponseEntity<>(errorDTO, HttpStatus.NOT_FOUND);
+            responseEntity = ResponseEntityUtil.INSTANCE.handleException(e);
+        }
+
+        return responseEntity;
+    }
+
+    @PostMapping("/")
+    public ResponseEntity<Serializable> addProduct(@RequestBody ProductRequestDTO productRequestDTO) {
+
+        ResponseEntity<Serializable> responseEntity;
+
+        try {
+
+            ProductEntity productEntity = business.addProduct(productRequestDTO);
+            responseEntity = ResponseEntityUtil.INSTANCE.handleSingleResponse(productEntity, HttpStatus.CREATED);
+
+        } catch (ValidationException | BusinessException e){
+
+            responseEntity = ResponseEntityUtil.INSTANCE.handleException(e);
         }
 
         return responseEntity;
@@ -55,15 +68,11 @@ public class ProductAPI {
         try {
 
             ProductEntity productEntity = business.getProductById(id);
-            ResponseDTO<ProductEntity> responseDTO = new ResponseDTO<>();
-            responseDTO.setData(productEntity);
-            responseEntity = ResponseEntity.ok(responseDTO);
+            responseEntity = ResponseEntityUtil.INSTANCE.handleSingleResponse(productEntity);
 
         } catch (ElementNotFoundException e){
 
-            ErrorDTO errorDTO = new ErrorDTO();
-            errorDTO.setErrors(e.getErrors());
-            responseEntity = new ResponseEntity<>(errorDTO, HttpStatus.NOT_FOUND);
+            responseEntity = ResponseEntityUtil.INSTANCE.handleException(e);
         }
 
         return responseEntity;

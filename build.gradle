@@ -23,6 +23,10 @@ configurations {
 		it.outgoing.artifact(bootJar)
 	}
 }
+configurations.all {
+	resolutionStrategy.cacheDynamicVersionsFor 0, 'seconds'
+	resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+}
 
 repositories {
 	mavenCentral()
