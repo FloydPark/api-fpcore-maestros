@@ -3,7 +3,6 @@ package com.floydpark.api.fpcore.maestros.api;
 import com.floydpark.api.fpcore.maestros.business.ProductBusiness;
 import com.floydpark.api.fpcore.maestros.commons.dto.ProductRequestDTO;
 import com.floydpark.api.fpcore.maestros.persistence.entity.ProductEntity;
-import com.floydpark.lib.commons.dto.ResponseDTO;
 import com.floydpark.lib.commons.exception.BusinessException;
 import com.floydpark.lib.commons.exception.ElementNotFoundException;
 import com.floydpark.lib.commons.exception.ValidationException;
@@ -53,6 +52,25 @@ public class ProductAPI {
             responseEntity = ResponseEntityUtil.INSTANCE.handleSingleResponse(productEntity, HttpStatus.CREATED);
 
         } catch (ValidationException | BusinessException e){
+
+            responseEntity = ResponseEntityUtil.INSTANCE.handleException(e);
+        }
+
+        return responseEntity;
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Serializable> updateProduct(@RequestBody ProductRequestDTO productRequestDTO,
+                                                      @PathVariable("id") String id){
+
+        ResponseEntity<Serializable> responseEntity;
+
+        try {
+
+            business.updateProduct(productRequestDTO, id);
+            responseEntity = ResponseEntity.noContent().build();
+
+        } catch (ValidationException | ElementNotFoundException e){
 
             responseEntity = ResponseEntityUtil.INSTANCE.handleException(e);
         }
