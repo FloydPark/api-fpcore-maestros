@@ -12,6 +12,7 @@ sourceCompatibility = '1.8'
 def url_archiva = project.hasProperty("url_archiva") ? url_archiva : ""
 def usr_archiva = project.hasProperty("usr_archiva") ? usr_archiva : ""
 def psw_archiva = project.hasProperty("psw_archiva") ? psw_archiva : ""
+def artifact_version = project.hasProperty("artifact_version") ? artifact_version : version
 
 configurations {
 	compileOnly {
@@ -37,7 +38,7 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
-	implementation 'com.floydpark.lib:lib-commons-floydpark:0.0.1-SNAPSHOT'
+	implementation 'com.floydpark.lib:lib-commons-floydpark:1.0.0.dev-SNAPSHOT'
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
@@ -59,6 +60,7 @@ sonarqube {
 publishing {
 	publications {
 		mavenJava(MavenPublication) {
+			version = artifact_version
 			from(components.java)
 		}
 	}
